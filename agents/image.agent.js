@@ -19,7 +19,7 @@ class ImageAgent {
      * Generate an image using Gradio client
      * @param {string} prompt - The text prompt for image generation
      * @param {number} index - Index number for logging
-     * @returns {Promise<string>} - URL or path to the generated image
+     * @returns {Promise<string>} - URL to the generated image (HuggingFace URL)
      */
     async generateImage(prompt, index = 0) {
         try {
@@ -27,38 +27,20 @@ class ImageAgent {
 
             // Dynamically import ESM-only modules at runtime
             const { Client } = await import("@gradio/client");
-            const { default: fetch } = await import("node-fetch");
 
             const client = await Client.connect('anycoderapps/Z-Image-Turbo');
 
             const result = await client.predict("/generate_image", {
                 prompt: prompt,
-                // width: 512,
-                // height: 512,
-                // seed: 3,
-                // randomize: true,
-                // server_choice: "Google US Server"
             });
-            console.log(result);
+
             console.log(`✅ [${index + 1}] Image generation result received`);
 
-            // Extract image URL from result
+            // Extract and return the HuggingFace image URL directly
             const imageUrl = (result.data)[0].url;
+            console.log(`🔗 [${index + 1}] Image URL:`, imageUrl);
 
-            // Download the image
-            const imageResponse = await fetch(imageUrl);
-            const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
-
-            // Generate unique filename
-            const fileName = `img_${Date.now()}_${index}_${Math.random().toString(36).substring(7)}.png`;
-            const filePath = path.join(this.outputDir, fileName);
-
-            // Save image to disk
-            await fs.writeFile(filePath, imageBuffer);
-            console.log(`💾 [${index + 1}] Image saved:`, fileName, 'Size:', imageBuffer.length, 'bytes');
-
-            // Return the public URL
-            return `/generated-images/${fileName}`;
+            return imageUrl;
 
         } catch (error) {
             console.error(`❌ [${index + 1}] Image generation failed:`, error.message);
