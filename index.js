@@ -21,8 +21,21 @@ const PORT = process.env.PORT || 3000;
 connectDB();
 
 // Middleware
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:4200').split(',').map(origin => origin.trim().replace(/\/$/, ''));
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        const cleanOrigin = origin.replace(/\/$/, '');
+        if (allowedOrigins.includes(cleanOrigin) || allowedOrigins.includes('*')) {
+            callback(null, true);
+        } else {
+            console.log('Blocked by CORS:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
