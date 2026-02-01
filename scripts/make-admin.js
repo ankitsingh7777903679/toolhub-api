@@ -14,7 +14,7 @@ if (!email) {
 
 async function makeAdmin() {
     try {
-        const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/toolhub';
+        const mongoUri = process.env.MONGODB_URI;
         await mongoose.connect(mongoUri);
         console.log('Connected to MongoDB');
 
