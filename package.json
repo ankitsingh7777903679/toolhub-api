@@ -1,0 +1,42 @@
+{
+  "name": "toolhub-api",
+  "version": "1.0.0",
+  "description": "ToolHub API Backend with LangChain and Groq",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "langchain",
+    "groq",
+    "ai",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@gradio/client": "^2.0.4",
+    "@langchain/core": "^1.1.8",
+    "@langchain/groq": "^1.0.2",
+    "@mistralai/mistralai": "^1.13.0",
+    "axios": "^1.13.4",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "groq-sdk": "^0.37.0",
+    "jsonwebtoken": "^9.0.3",
+    "langchain": "^1.2.3",
+    "libreoffice": "^0.4.5",
+    "libreoffice-convert": "^1.7.0",
+    "mammoth": "^1.11.0",
+    "mongoose": "^9.1.2",
+    "muhammara": "^6.0.2",
+    "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
+    "puppeteer-core": "^24.35.0"
+  }
+}
