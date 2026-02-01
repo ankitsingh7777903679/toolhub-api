@@ -22,7 +22,7 @@ router.post('/image-to-csv', async (req, res) => {
             });
         }
 
-        console.log(`📊 Image to CSV request received (${mimeType})`);
+        // console.log(`📊 Image to CSV request received (${mimeType})`);
 
         // For PDFs, Groq can handle them directly with vision models
         const dataUrl = `data:${mimeType || 'image/png'};base64,${base64}`;
@@ -91,7 +91,7 @@ If no table data is found, return: "NO_TABLE_DATA_FOUND"`
             return cells;
         });
 
-        console.log(`✅ Extracted ${parsedData.length} rows`);
+        // console.log(`✅ Extracted ${parsedData.length} rows`);
 
         res.json({
             success: true,
@@ -125,10 +125,10 @@ router.post('/image-to-excel', async (req, res) => {
             });
         }
 
-        console.log(`📊 Image to Excel request received (${mimeType})`);
+        // console.log(`📊 Image to Excel request received (${mimeType})`);
 
         // STEP 1: Mistral OCR via Direct REST API (Specialized OCR Endpoint)
-        console.log('🔍 Step 1: Running Mistral OCR-2512...');
+        // console.log('🔍 Step 1: Running Mistral OCR-2512...');
 
         let ocrText = '';
         try {
@@ -161,7 +161,7 @@ router.post('/image-to-excel', async (req, res) => {
             const pages = mistralResponse.data?.pages || [];
             ocrText = pages.map(p => p.markdown).join('\n\n') || '';
 
-            console.log(`✅ OCR extracted ${ocrText.length} characters`);
+            // console.log(`✅ OCR extracted ${ocrText.length} characters`);
         } catch (ocrError) {
             console.error('OCR Error Details:', JSON.stringify(ocrError.response?.data, null, 2));
             return res.status(500).json({
@@ -178,7 +178,7 @@ router.post('/image-to-excel', async (req, res) => {
         }
 
         // STEP 2: Groq AI for JSON formatting
-        console.log('🤖 Step 2: Processing with Groq AI...');
+        // console.log('🤖 Step 2: Processing with Groq AI...');
 
         const systemPrompt = `You are an expert at extracting clean, structured table data from messy OCR text.
 
@@ -230,7 +230,7 @@ CRITICAL: Return ONLY the JSON object. No markdown, no explanations, no text bef
             content = content.substring(firstBrace, lastBrace + 1);
         }
 
-        console.log('📝 Cleaned content length:', content.length);
+        // console.log('📝 Cleaned content length:', content.length);
 
         // Parse JSON
         let data;
@@ -238,7 +238,7 @@ CRITICAL: Return ONLY the JSON object. No markdown, no explanations, no text bef
             const parsed = JSON.parse(content);
             data = parsed.table || (Array.isArray(parsed) ? parsed : [parsed]);
         } catch (e) {
-            console.log('⚠️ JSON parse failed, trying to fix common issues...');
+            // console.log('⚠️ JSON parse failed, trying to fix common issues...');
 
             // Try to fix common JSON issues
             let fixedContent = content
@@ -257,14 +257,14 @@ CRITICAL: Return ONLY the JSON object. No markdown, no explanations, no text bef
                     try {
                         data = JSON.parse(arrayMatch[0]);
                     } catch (e3) {
-                        console.log('❌ All parsing failed. Preview:', content.substring(0, 300));
+                        // console.log('❌ All parsing failed. Preview:', content.substring(0, 300));
                         return res.status(400).json({
                             error: 'Parsing failed',
                             message: 'Could not parse AI response. Please try again.'
                         });
                     }
                 } else {
-                    console.log('❌ No valid JSON found. Preview:', content.substring(0, 300));
+                    // console.log('❌ No valid JSON found. Preview:', content.substring(0, 300));
                     return res.status(400).json({
                         error: 'Parsing failed',
                         message: 'Could not extract table data. Please try again.'
@@ -280,7 +280,7 @@ CRITICAL: Return ONLY the JSON object. No markdown, no explanations, no text bef
             });
         }
 
-        console.log(`✅ Extracted ${data.length} rows for Excel`);
+        // console.log(`✅ Extracted ${data.length} rows for Excel`);
 
         res.json({
             success: true,

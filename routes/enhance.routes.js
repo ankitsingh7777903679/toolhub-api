@@ -19,7 +19,7 @@ router.post('/image', async (req, res) => {
             });
         }
 
-        console.log('📸 Received image for enhancement...');
+        // console.log('📸 Received image for enhancement...');
 
         const enhancedBase64 = await enhanceAgent.enhanceImage(image);
 

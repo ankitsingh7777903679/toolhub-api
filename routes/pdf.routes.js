@@ -31,7 +31,7 @@ router.post('/generate', async (req, res) => {
 
         // If base64 provided, run Mistral OCR first to get text
         if (base64) {
-            console.log(`🔍 Running Mistral OCR for PDF generation... (${mimeType})`);
+            // console.log(`🔍 Running Mistral OCR for PDF generation... (${mimeType})`);
 
             try {
                 const axios = require('axios');
@@ -59,7 +59,7 @@ router.post('/generate', async (req, res) => {
                 const pages = mistralResponse.data?.pages || [];
                 text = pages.map(p => p.markdown).join('\n\n') || '';
 
-                console.log(`✅ OCR extracted ${text.length} characters for PDF generation`);
+                // console.log(`✅ OCR extracted ${text.length} characters for PDF generation`);
             } catch (ocrError) {
                 console.error('OCR Error in PDF generation:', ocrError.message);
                 // Fallthrough - will fail at !text check below if extraction failed
@@ -81,7 +81,7 @@ router.post('/generate', async (req, res) => {
             });
         }
 
-        console.log(`📄 Generating PDF with Chrome: ${chromePath}`);
+        // console.log(`📄 Generating PDF with Chrome: ${chromePath}`);
 
         // Launch browser
         browser = await puppeteer.launch({
@@ -203,7 +203,7 @@ router.post('/generate', async (req, res) => {
         await browser.close();
         browser = null;
 
-        console.log(`✅ PDF generated successfully (${pdfBuffer.length} bytes)`);
+        // console.log(`✅ PDF generated successfully (${pdfBuffer.length} bytes)`);
 
         // Send PDF
         res.set({
@@ -283,7 +283,7 @@ router.post('/word-to-pdf', upload.single('file'), async (req, res) => {
             return res.status(400).json({ error: 'Invalid file type. Please upload a .doc or .docx file.' });
         }
 
-        console.log(`📄 Converting Word document: ${file.originalname}`);
+        // console.log(`📄 Converting Word document: ${file.originalname}`);
 
         // Write file to temp directory
         fs.writeFileSync(inputPath, file.buffer);
@@ -307,7 +307,7 @@ try {
         // Execute PowerShell
         const { execSync } = require('child_process');
 
-        console.log('📦 Using MS Word for conversion...');
+        // console.log('📦 Using MS Word for conversion...');
 
         try {
             execSync(`powershell -ExecutionPolicy Bypass -File "${psScriptPath}"`, {
@@ -349,7 +349,7 @@ try {
         // Create output filename
         const outputFilename = file.originalname.replace(/\.(doc|docx)$/i, '.pdf');
 
-        console.log(`✅ Word to PDF conversion successful: ${outputFilename} (${pdfBuffer.length} bytes)`);
+        // console.log(`✅ Word to PDF conversion successful: ${outputFilename} (${pdfBuffer.length} bytes)`);
 
         res.set({
             'Content-Type': 'application/pdf',
@@ -402,7 +402,7 @@ router.post('/protect', upload.single('file'), async (req, res) => {
         // Write input file
         fs.writeFileSync(inputPath, file.buffer);
 
-        console.log(`🔒 Protecting PDF with password using muhammara...`);
+        // console.log(`🔒 Protecting PDF with password using muhammara...`);
 
         // Use muhammara to create a NEW encrypted PDF and copy pages
         // This is more reliable for password protection than modifying existing
@@ -422,7 +422,7 @@ router.post('/protect', upload.single('file'), async (req, res) => {
         if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
         if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
 
-        console.log(`✅ PDF protected successfully with muhammara`);
+        // console.log(`✅ PDF protected successfully with muhammara`);
 
         res.set({
             'Content-Type': 'application/pdf',
@@ -474,7 +474,7 @@ router.post('/unlock', upload.single('file'), async (req, res) => {
         // Write input file
         fs.writeFileSync(inputPath, file.buffer);
 
-        console.log(`🔓 Unlocking PDF using muhammara...`);
+        // console.log(`🔓 Unlocking PDF using muhammara...`);
 
         // Use muhammara to unlock: create new PDF and append pages from encrypted source
         const pdfWriter = muhammara.createWriter(outputPath);
@@ -488,7 +488,7 @@ router.post('/unlock', upload.single('file'), async (req, res) => {
         if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
         if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
 
-        console.log(`✅ PDF unlocked successfully`);
+        // console.log(`✅ PDF unlocked successfully`);
 
         res.set({
             'Content-Type': 'application/pdf',

@@ -55,13 +55,13 @@ router.post('/pdf-to-word', upload.single('pdf'), async (req, res) => {
         outputDir = path.join(__dirname, '../temp/output', uuidv4());
         await fs.mkdir(outputDir, { recursive: true });
 
-        console.log(`📄 Converting PDF: ${pdfPath}`);
-        console.log(`📁 Output directory: ${outputDir}`);
+        // console.log(`📄 Converting PDF: ${pdfPath}`);
+        // console.log(`📁 Output directory: ${outputDir}`);
 
         // Build LibreOffice command
         const command = `"${LIBREOFFICE_PATH}" --headless --convert-to docx --outdir "${outputDir}" "${pdfPath}"`;
 
-        console.log(`🔧 Running: ${command}`);
+        // console.log(`🔧 Running: ${command}`);
 
         // Execute LibreOffice conversion
         await new Promise((resolve, reject) => {

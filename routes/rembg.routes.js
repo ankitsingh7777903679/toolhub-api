@@ -19,7 +19,7 @@ router.post('/remove', async (req, res) => {
             });
         }
 
-        console.log('📸 Received image for background removal...');
+        // console.log('📸 Received image for background removal...');
 
         const processedBase64 = await rembgAgent.removeBackground(image, model);
 

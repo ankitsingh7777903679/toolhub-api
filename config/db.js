@@ -9,7 +9,7 @@ const connectDB = async () => {
         }
 
         await mongoose.connect(mongoUri);
-        console.log('📦 MongoDB Atlas connected successfully');
+        // console.log('📦 MongoDB Atlas connected successfully');
     } catch (error) {
         console.error('❌ MongoDB connection error:', error.message);
         // Do not exit process in dev mode to allow API to run without DB if needed

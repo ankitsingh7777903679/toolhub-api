@@ -19,7 +19,7 @@ router.post('/generate', async (req, res) => {
             });
         }
 
-        console.log(`🎨 Generating ${count} images for prompt: "${prompt}"`);
+        // console.log(`🎨 Generating ${count} images for prompt: "${prompt}"`);
 
         const imageUrls = await imageAgent.generateMultipleImages(prompt, count);
 

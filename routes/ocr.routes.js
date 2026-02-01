@@ -29,7 +29,7 @@ router.post('/extract', async (req, res) => {
             }
         }
 
-        console.log(`📄 OCR request received for ${images.length} images`);
+        // console.log(`📄 OCR request received for ${images.length} images`);
 
         const extractedText = await ocrAgent.extractFromMultipleImages(images);
 
@@ -64,7 +64,7 @@ router.post('/extract-single', async (req, res) => {
             });
         }
 
-        console.log(`📄 Single OCR request (mimeType: ${mimeType}, html: ${!!returnHtml})`);
+        // console.log(`📄 Single OCR request (mimeType: ${mimeType}, html: ${!!returnHtml})`);
 
         if (returnHtml) {
             // Use Mistral for both OCR and HTML formatting

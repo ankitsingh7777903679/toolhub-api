@@ -58,7 +58,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 ToolHub API running on http://localhost:${PORT}`);
-    console.log(`📝 AI endpoint: http://localhost:${PORT}/api/ai/generate`);
-    console.log(`🎨 Image endpoint: http://localhost:${PORT}/api/image/generate`);
+    // console.log(`🚀 ToolHub API running on http://localhost:${PORT}`);
+    // console.log(`📝 AI endpoint: http://localhost:${PORT}/api/ai/generate`);
+    // console.log(`🎨 Image endpoint: http://localhost:${PORT}/api/image/generate`);
 });
