@@ -20,13 +20,13 @@ class EnhanceAgent {
      */
     async enhanceImage(base64Image) {
         try {
-            console.log('🔧 Enhancing image with Real-ESRGAN...');
+            // console.log('🔧 Enhancing image with Real-ESRGAN...');
 
             // Remove data URL prefix if present
             const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
             const imageBuffer = Buffer.from(base64Data, 'base64');
 
-            console.log('📤 Connecting to Real-ESRGAN Space...');
+            // console.log('📤 Connecting to Real-ESRGAN Space...');
 
             // Dynamically import ESM-only modules (same as image.agent.js)
             const { Client } = await import("@gradio/client");
@@ -45,8 +45,8 @@ class EnhanceAgent {
                 false    // face_enhance
             ]);
 
-            console.log('✅ Image enhanced successfully!');
-            console.log('Result:', result.data);
+            // console.log('✅ Image enhanced successfully!');
+            // console.log('Result:', result.data);
 
             // Handle the result - extract URL and download
             if (result.data && result.data[0]) {
@@ -54,7 +54,7 @@ class EnhanceAgent {
 
                 // If it's a URL object with url property
                 if (enhancedData.url) {
-                    console.log('📥 Downloading enhanced image from:', enhancedData.url);
+                    // console.log('📥 Downloading enhanced image from:', enhancedData.url);
                     const response = await fetch(enhancedData.url);
                     const buffer = Buffer.from(await response.arrayBuffer());
                     return buffer.toString('base64');
@@ -62,7 +62,7 @@ class EnhanceAgent {
 
                 // If it's a direct URL string
                 if (typeof enhancedData === 'string' && enhancedData.startsWith('http')) {
-                    console.log('📥 Downloading enhanced image from:', enhancedData);
+                    // console.log('📥 Downloading enhanced image from:', enhancedData);
                     const response = await fetch(enhancedData);
                     const buffer = Buffer.from(await response.arrayBuffer());
                     return buffer.toString('base64');
@@ -77,7 +77,7 @@ class EnhanceAgent {
             throw new Error('No enhanced image returned from model');
 
         } catch (error) {
-            console.error('❌ Image enhancement failed:', error.message);
+            // console.error('❌ Image enhancement failed:', error.message);
             throw new Error(`Enhancement failed: ${error.message}`);
         }
     }

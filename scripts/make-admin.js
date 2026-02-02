@@ -8,7 +8,7 @@ const User = require('../models/User');
 const email = process.argv[2];
 
 if (!email) {
-    console.log('Usage: node scripts/make-admin.js <email>');
+    // console.log('Usage: node scripts/make-admin.js <email>');
     process.exit(1);
 }
 
@@ -16,7 +16,7 @@ async function makeAdmin() {
     try {
         const mongoUri = process.env.MONGODB_URI;
         await mongoose.connect(mongoUri);
-        console.log('Connected to MongoDB');
+        // console.log('Connected to MongoDB');
 
         const user = await User.findOneAndUpdate(
             { email },
@@ -25,15 +25,18 @@ async function makeAdmin() {
         );
 
         if (!user) {
-            console.log(`User with email "${email}" not found.`);
-            console.log('Please signup first, then run this script.');
+            // console.log(`User with email "${email}" not found.`);
+            // console.log('Please signup first, then run this script.');
+            throw new Error(`User with email "${email}" not found.`);
         } else {
-            console.log(`✅ User "${user.username}" (${user.email}) is now an admin!`);
+            // console.log(`✅ User "${user.username}" (${user.email}) is now an admin!`);
+            return user;
         }
 
         await mongoose.disconnect();
     } catch (error) {
-        console.error('Error:', error.message);
+        // console.error('Error:', error.message);
+        throw error;
         process.exit(1);
     }
 }

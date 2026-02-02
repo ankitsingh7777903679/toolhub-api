@@ -30,7 +30,7 @@ router.post('/image', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Enhancement error:', error.message);
+        // console.error('❌ Enhancement error:', error.message);
         res.status(500).json({
             error: 'Enhancement failed',
             message: error.message

@@ -31,7 +31,7 @@ router.post('/generate', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Image Generation Error:', error.message);
+        // console.error('Image Generation Error:', error.message);
         res.status(500).json({
             error: 'Generation failed',
             message: error.message

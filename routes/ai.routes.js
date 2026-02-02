@@ -26,7 +26,7 @@ router.post('/generate', async (req, res) => {
             });
         }
 
-        console.log(`📝 Generating ${promptType} content...`);
+        // console.log(`📝 Generating ${promptType} content...`);
 
         const result = await writingAgent.generate(promptType, text, paragraphs);
 

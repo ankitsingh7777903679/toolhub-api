@@ -19,13 +19,13 @@ class RemBgAgent {
      */
     async removeBackground(base64Image, model = 'isnet-general-use') {
         try {
-            console.log('🔧 Removing background with RemBG...');
+            // console.log('🔧 Removing background with RemBG...');
 
             // Remove data URL prefix if present
             const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
             const imageBuffer = Buffer.from(base64Data, 'base64');
 
-            console.log('📤 Connecting to RemBG Space...');
+            // console.log('📤 Connecting to RemBG Space...');
 
             // Dynamically import ESM-only modules
             const { Client, handle_file } = await import("@gradio/client");
@@ -36,7 +36,7 @@ class RemBgAgent {
             // Create a Blob from the buffer for Gradio
             const blob = new Blob([imageBuffer], { type: 'image/png' });
 
-            console.log('📤 Processing image...');
+            // console.log('📤 Processing image...');
 
             // Call the /inference endpoint with correct parameters
             // API: /inference with parameters: file, model, x, y
@@ -47,8 +47,8 @@ class RemBgAgent {
                 y: 0                           // Mouse Y coordinate (not used for auto removal)
             });
 
-            console.log('✅ Background removed successfully!');
-            console.log('Result:', result.data);
+            // console.log('✅ Background removed successfully!');
+            // console.log('Result:', result.data);
 
             // Handle the result - returns tuple of 2 elements:
             // [0] Output Image, [1] Output Mask
@@ -57,7 +57,7 @@ class RemBgAgent {
 
                 // If it's a URL object with url property
                 if (processedData.url) {
-                    console.log('📥 Downloading processed image from:', processedData.url);
+                    // console.log('📥 Downloading processed image from:', processedData.url);
                     const response = await fetch(processedData.url);
                     const buffer = Buffer.from(await response.arrayBuffer());
                     return buffer.toString('base64');
@@ -65,7 +65,7 @@ class RemBgAgent {
 
                 // If it has a path property (local file path from Gradio)
                 if (processedData.path) {
-                    console.log('📥 Downloading processed image from path');
+                    // console.log('📥 Downloading processed image from path');
                     // Try to construct URL from path
                     const response = await fetch(processedData.path);
                     const buffer = Buffer.from(await response.arrayBuffer());
@@ -74,7 +74,7 @@ class RemBgAgent {
 
                 // If it's a direct URL string
                 if (typeof processedData === 'string' && processedData.startsWith('http')) {
-                    console.log('📥 Downloading processed image from:', processedData);
+                    // console.log('📥 Downloading processed image from:', processedData);
                     const response = await fetch(processedData);
                     const buffer = Buffer.from(await response.arrayBuffer());
                     return buffer.toString('base64');
@@ -89,7 +89,7 @@ class RemBgAgent {
             throw new Error('No processed image returned from model');
 
         } catch (error) {
-            console.error('❌ Background removal failed:', error.message);
+            // console.error('❌ Background removal failed:', error.message);
             throw new Error(`Background removal failed: ${error.message}`);
         }
     }

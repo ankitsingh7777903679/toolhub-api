@@ -42,7 +42,7 @@ router.post('/signup', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Signup error:', error);
+        // console.error('Signup error:', error);
         res.status(500).json({ error: error.message || 'Signup failed' });
     }
 });
@@ -82,7 +82,7 @@ router.post('/login', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Login error:', error);
+        // console.error('Login error:', error);
         res.status(500).json({ error: 'Login failed' });
     }
 });

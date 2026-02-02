@@ -40,7 +40,7 @@ router.post('/extract', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('OCR Error:', error.message);
+        // console.error('OCR Error:', error.message);
         res.status(500).json({
             error: 'OCR extraction failed',
             message: error.message
@@ -87,7 +87,7 @@ router.post('/extract-single', async (req, res) => {
         }
 
     } catch (error) {
-        console.error('OCR Error:', error.message);
+        // console.error('OCR Error:', error.message);
         res.status(500).json({
             error: 'OCR extraction failed',
             message: error.message

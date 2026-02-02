@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
@@ -21,6 +22,7 @@ const PORT = process.env.PORT || 3000;
 connectDB();
 
 // Middleware
+app.use(compression());
 const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:4200').split(',').map(origin => origin.trim().replace(/\/$/, ''));
 
 app.use(cors({
@@ -32,7 +34,7 @@ app.use(cors({
         if (allowedOrigins.includes(cleanOrigin) || allowedOrigins.includes('*')) {
             callback(null, true);
         } else {
-            console.log('Blocked by CORS:', origin);
+            // console.log('Blocked by CORS:', origin);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -63,7 +65,7 @@ app.get('/api/health', (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error('Error:', err.message);
+    // console.error('Error:', err.message);
     res.status(500).json({
         error: 'Internal server error',
         message: err.message

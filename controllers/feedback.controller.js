@@ -13,7 +13,7 @@ exports.submitFeedback = async (req, res) => {
 
         // 1. Analyze content with AI Agent
         const analysis = await feedbackAgent.analyze(content);
-        console.log('📝 Feedback Analysis Result:', analysis);
+        // console.log('📝 Feedback Analysis Result:', analysis);
 
         // 2. Check for abusive content
         if (analysis.isAbusive) {
@@ -40,7 +40,7 @@ exports.submitFeedback = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error submitting feedback:', error);
+        // console.error('Error submitting feedback:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
@@ -54,7 +54,7 @@ exports.getFeedbacks = async (req, res) => {
 
         res.json(feedbacks);
     } catch (error) {
-        console.error('Error fetching feedbacks:', error);
+        // console.error('Error fetching feedbacks:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };

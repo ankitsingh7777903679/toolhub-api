@@ -61,8 +61,9 @@ router.post('/generate', async (req, res) => {
 
                 // console.log(`✅ OCR extracted ${text.length} characters for PDF generation`);
             } catch (ocrError) {
-                console.error('OCR Error in PDF generation:', ocrError.message);
+                // console.error('OCR Error in PDF generation:', ocrError.message);
                 // Fallthrough - will fail at !text check below if extraction failed
+                throw new Error(`OCR extraction failed: ${ocrError.message}`);
             }
         }
 
@@ -215,7 +216,7 @@ router.post('/generate', async (req, res) => {
         res.send(pdfBuffer);
 
     } catch (error) {
-        console.error('❌ PDF generation error:', error.message);
+        // console.error('❌ PDF generation error:', error.message);
 
         if (browser) {
             await browser.close();
@@ -252,7 +253,8 @@ let muhammara;
 try {
     muhammara = require('muhammara');
 } catch (e) {
-    console.error('Failed to load muhammara:', e.message);
+    // console.error('Failed to load muhammara:', e.message);
+    throw new Error(`Failed to load muhammara: ${e.message}`);
 }
 
 // Configure multer for file uploads
@@ -320,7 +322,7 @@ try {
             if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
             if (fs.existsSync(psScriptPath)) fs.unlinkSync(psScriptPath);
 
-            console.error('PowerShell error:', psError.message);
+            // console.error('PowerShell error:', psError.message);
             return res.status(500).json({
                 error: 'MS Word conversion failed',
                 message: 'Make sure Microsoft Word is installed and try again.'
@@ -360,7 +362,7 @@ try {
         res.send(pdfBuffer);
 
     } catch (error) {
-        console.error('❌ Word to PDF conversion error:', error.message);
+        // console.error('❌ Word to PDF conversion error:', error.message);
 
         // Clean up
         if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
@@ -432,7 +434,7 @@ router.post('/protect', upload.single('file'), async (req, res) => {
         res.send(protectedPdf);
 
     } catch (error) {
-        console.error('❌ PDF protection error:', error.message);
+        // console.error('❌ PDF protection error:', error.message);
 
         // Clean up
         if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
@@ -497,7 +499,7 @@ router.post('/unlock', upload.single('file'), async (req, res) => {
         res.send(unlockedPdf);
 
     } catch (error) {
-        console.error('❌ PDF unlock error:', error.message);
+        // console.error('❌ PDF unlock error:', error.message);
 
         // Clean up
         if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);

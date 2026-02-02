@@ -30,7 +30,7 @@ router.post('/remove', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Background removal error:', error.message);
+        // console.error('❌ Background removal error:', error.message);
         res.status(500).json({
             error: 'Background removal failed',
             message: error.message

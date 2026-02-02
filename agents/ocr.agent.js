@@ -19,7 +19,7 @@ class OCRAgent {
      */
     async extractText(base64Image, mimeType = 'image/png') {
         try {
-            console.log('🔍 Running Mistral OCR (Direct API)...');
+            // console.log('🔍 Running Mistral OCR (Direct API)...');
 
             const axios = require('axios');
 
@@ -36,7 +36,7 @@ class OCRAgent {
                 }
             };
 
-            console.log(`� OCR Request: Type=${documentType}, Size=${base64Image?.length || 0} bytes`);
+            // console.log(`� OCR Request: Type=${documentType}, Size=${base64Image?.length || 0} bytes`);
 
             const mistralResponse = await axios.post('https://api.mistral.ai/v1/ocr', payload, {
                 headers: {
@@ -51,7 +51,7 @@ class OCRAgent {
             const pages = mistralResponse.data?.pages || [];
             const extractedText = pages.map(p => p.markdown).join('\n\n') || '';
 
-            console.log(`✅ OCR extracted ${extractedText.length} characters`);
+            // console.log(`✅ OCR extracted ${extractedText.length} characters`);
 
             return extractedText;
 
@@ -71,7 +71,7 @@ class OCRAgent {
             const axios = require('axios');
 
             // Step 1: Mistral OCR for best text extraction
-            console.log('🔍 Step 1: Mistral OCR...');
+            // console.log('🔍 Step 1: Mistral OCR...');
             const isPdf = mimeType === 'application/pdf';
 
             const ocrPayload = {
@@ -95,17 +95,17 @@ class OCRAgent {
                     });
                     break;
                 } catch (err) {
-                    console.log(`⚠️ OCR attempt ${attempt}/3 failed`);
+                    // console.log(`⚠️ OCR attempt ${attempt}/3 failed`);
                     if (attempt === 3) throw err;
                     await new Promise(r => setTimeout(r, 2000));
                 }
             }
 
             const ocrText = ocrResponse.data?.pages?.map(p => p.markdown).join('\n\n') || '';
-            console.log(`✅ OCR: ${ocrText.length} chars`);
+            // console.log(`✅ OCR: ${ocrText.length} chars`);
 
             // Step 2: Mistral Chat for HTML formatting
-            console.log('🎨 Step 2: Mistral HTML formatting...');
+            // console.log('🎨 Step 2: Mistral HTML formatting...');
             const htmlPrompt = `Convert this text to HTML with inline CSS. Return ONLY HTML.
 
 FORMAT:
@@ -143,11 +143,11 @@ ${ocrText}`;
             let html = chatResponse.data?.choices?.[0]?.message?.content || '';
             html = html.replace(/^```html?\s*/i, '').replace(/\s*```$/i, '').trim();
 
-            console.log(`✅ HTML: ${html.length} chars`);
+            // console.log(`✅ HTML: ${html.length} chars`);
             return { text: ocrText, html, images: [] };
 
         } catch (error) {
-            console.error('❌ Error:', error.response?.data || error.message);
+            // console.error('❌ Error:', error.response?.data || error.message);
             throw new Error('OCR failed: ' + (error.response?.data?.message || error.message));
         }
     }
@@ -159,12 +159,12 @@ ${ocrText}`;
      */
     async extractFromMultipleImages(images) {
         try {
-            console.log(`🔍 Processing ${images.length} pages...`);
+            // console.log(`🔍 Processing ${images.length} pages...`);
 
             const textParts = [];
 
             for (let i = 0; i < images.length; i++) {
-                console.log(`📄 Processing page ${i + 1}/${images.length}...`);
+                // console.log(`📄 Processing page ${i + 1}/${images.length}...`);
 
                 const text = await this.extractText(images[i].base64, images[i].mimeType);
                 textParts.push(`--- Page ${i + 1} ---\n\n${text}`);
@@ -176,12 +176,12 @@ ${ocrText}`;
             }
 
             const combinedText = textParts.join('\n\n');
-            console.log(`✅ Successfully extracted text from ${images.length} pages`);
+            // console.log(`✅ Successfully extracted text from ${images.length} pages`);
 
             return combinedText;
 
         } catch (error) {
-            console.error('❌ Multi-page OCR failed:', error.message);
+            // console.error('❌ Multi-page OCR failed:', error.message);
             throw error;
         }
     }

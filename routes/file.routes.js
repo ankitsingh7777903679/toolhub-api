@@ -102,7 +102,7 @@ If no table data is found, return: "NO_TABLE_DATA_FOUND"`
         });
 
     } catch (error) {
-        console.error('Image to CSV Error:', error.message);
+        // console.error('Image to CSV Error:', error.message);
         res.status(500).json({
             error: 'Extraction failed',
             message: error.message
@@ -163,7 +163,7 @@ router.post('/image-to-excel', async (req, res) => {
 
             // console.log(`✅ OCR extracted ${ocrText.length} characters`);
         } catch (ocrError) {
-            console.error('OCR Error Details:', JSON.stringify(ocrError.response?.data, null, 2));
+            // console.error('OCR Error Details:', JSON.stringify(ocrError.response?.data, null, 2));
             return res.status(500).json({
                 error: 'OCR failed',
                 message: 'Failed to extract text: ' + (ocrError.response?.data?.message || ocrError.message)
@@ -290,7 +290,7 @@ CRITICAL: Return ONLY the JSON object. No markdown, no explanations, no text bef
         });
 
     } catch (error) {
-        console.error('Image to Excel Error:', error.message);
+        // console.error('Image to Excel Error:', error.message);
         res.status(500).json({
             error: 'Extraction failed',
             message: error.message

@@ -90,7 +90,7 @@ router.get('/', verifyAdmin, async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error fetching users:', error);
+        // console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
     }
 });
@@ -138,7 +138,7 @@ router.patch('/:id', verifyAdmin, async (req, res) => {
 
         res.json(user);
     } catch (error) {
-        console.error('Error updating user:', error);
+        // console.error('Error updating user:', error);
         res.status(500).json({ error: error.message || 'Failed to update user' });
     }
 });
@@ -224,7 +224,7 @@ router.delete('/:id', verifyAdmin, async (req, res) => {
 
         res.json({ message: 'User archived and deleted successfully' });
     } catch (error) {
-        console.error('Error deleting user:', error);
+        // console.error('Error deleting user:', error);
         res.status(500).json({ error: 'Failed to delete user' });
     }
 });
@@ -264,7 +264,7 @@ router.post('/restore/:id', verifyAdmin, async (req, res) => {
 
         res.json({ message: 'User restored successfully', user: restoredUser });
     } catch (error) {
-        console.error('Error restoring user:', error);
+        // console.error('Error restoring user:', error);
         res.status(500).json({ error: 'Failed to restore user' });
     }
 });

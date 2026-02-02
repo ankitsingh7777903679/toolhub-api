@@ -67,12 +67,12 @@ router.post('/pdf-to-word', upload.single('pdf'), async (req, res) => {
         await new Promise((resolve, reject) => {
             exec(command, { timeout: 120000 }, (error, stdout, stderr) => {
                 if (error) {
-                    console.error('LibreOffice error:', error.message);
-                    console.error('stderr:', stderr);
+                    // console.error('LibreOffice error:', error.message);
+                    // console.error('stderr:', stderr);
                     reject(new Error(`Conversion failed: ${error.message}`));
                     return;
                 }
-                console.log('LibreOffice output:', stdout);
+                // console.log('LibreOffice output:', stdout);
                 resolve(stdout);
             });
         });
@@ -88,7 +88,7 @@ router.post('/pdf-to-word', upload.single('pdf'), async (req, res) => {
         const docxPath = path.join(outputDir, docxFile);
         const docxBuffer = await fs.readFile(docxPath);
 
-        console.log(`✅ Conversion successful: ${docxFile} (${docxBuffer.length} bytes)`);
+        // console.log(`✅ Conversion successful: ${docxFile} (${docxBuffer.length} bytes)`);
 
         // Send the file
         res.set({
@@ -100,7 +100,7 @@ router.post('/pdf-to-word', upload.single('pdf'), async (req, res) => {
         res.send(docxBuffer);
 
     } catch (error) {
-        console.error('❌ PDF to Word conversion error:', error.message);
+        // console.error('❌ PDF to Word conversion error:', error.message);
         res.status(500).json({
             error: 'Conversion failed',
             message: error.message
@@ -111,7 +111,8 @@ router.post('/pdf-to-word', upload.single('pdf'), async (req, res) => {
             if (pdfPath) await fs.unlink(pdfPath).catch(() => { });
             if (outputDir) await fs.rm(outputDir, { recursive: true, force: true }).catch(() => { });
         } catch (e) {
-            console.log('Cleanup error:', e.message);
+            // console.log('Cleanup error:', e.message);
+            throw new Error(`Cleanup failed: ${e.message}`);
         }
     }
 });

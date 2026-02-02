@@ -37,7 +37,7 @@ class FeedbackAgent {
 
     async analyze(text) {
         try {
-            console.log('🔍 Analyzing feedback:', text);
+            // console.log('🔍 Analyzing feedback:', text);
 
             const messages = [
                 new SystemMessage(this.systemPrompt),

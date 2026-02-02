@@ -437,7 +437,7 @@ The ladle clattered to the floor..."`,
                 ? systemPromptFn(paragraphs)
                 : systemPromptFn;
 
-            console.log(`🤖 Using prompt type: ${promptType}`);
+            // console.log(`🤖 Using prompt type: ${promptType}`);
 
             // Create messages for LangChain
             const messages = [
@@ -452,7 +452,7 @@ The ladle clattered to the floor..."`,
             return response.content;
 
         } catch (error) {
-            console.error('LangChain Error:', error.message);
+            // console.error('LangChain Error:', error.message);
             throw new Error(`Failed to generate content: ${error.message}`);
         }
     }

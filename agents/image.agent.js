@@ -23,7 +23,7 @@ class ImageAgent {
      */
     async generateImage(prompt, index = 0) {
         try {
-            console.log(`🎨 [${index + 1}] Generating image with prompt:`, prompt);
+            // console.log(`🎨 [${index + 1}] Generating image with prompt:`, prompt);
 
             // Dynamically import ESM-only modules at runtime
             const { Client } = await import("@gradio/client");
@@ -34,16 +34,16 @@ class ImageAgent {
                 prompt: prompt,
             });
 
-            console.log(`✅ [${index + 1}] Image generation result received`);
+            // console.log(`✅ [${index + 1}] Image generation result received`);
 
             // Extract and return the HuggingFace image URL directly
             const imageUrl = (result.data)[0].url;
-            console.log(`🔗 [${index + 1}] Image URL:`, imageUrl);
+            // console.log(`🔗 [${index + 1}] Image URL:`, imageUrl);
 
             return imageUrl;
 
         } catch (error) {
-            console.error(`❌ [${index + 1}] Image generation failed:`, error.message);
+            // console.error(`❌ [${index + 1}] Image generation failed:`, error.message);
             throw new Error(`Image generation failed: ${error.message}`);
         }
     }
@@ -56,7 +56,7 @@ class ImageAgent {
      */
     async generateMultipleImages(prompt, count = 1) {
         try {
-            console.log(`🎨 Generating ${count} images sequentially...`);
+            // console.log(`🎨 Generating ${count} images sequentially...`);
 
             const imageUrls = [];
 
@@ -76,7 +76,7 @@ class ImageAgent {
                 }
             }
 
-            console.log(`✅ Successfully generated ${imageUrls.length}/${count} images`);
+            // console.log(`✅ Successfully generated ${imageUrls.length}/${count} images`);
 
             if (imageUrls.length === 0) {
                 throw new Error('All image generation attempts failed');
@@ -85,7 +85,7 @@ class ImageAgent {
             return imageUrls;
 
         } catch (error) {
-            console.error('❌ Multiple image generation failed:', error);
+            // console.error('❌ Multiple image generation failed:', error);
             throw error;
         }
     }
@@ -105,11 +105,11 @@ class ImageAgent {
 
                 if (now - stats.mtimeMs > maxAgeMs) {
                     await fs.unlink(filePath);
-                    console.log('🗑️ Cleaned up old image:', file);
+                    // console.log('🗑️ Cleaned up old image:', file);
                 }
             }
         } catch (error) {
-            console.error('Cleanup error:', error);
+            // console.error('Cleanup error:', error);
         }
     }
 }
