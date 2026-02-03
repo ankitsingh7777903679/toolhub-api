@@ -14,6 +14,7 @@ const enhanceRoutes = require('./routes/enhance.routes');
 const rembgRoutes = require('./routes/rembg.routes');
 const feedbackRoutes = require('./routes/feedback.routes');
 const fileRoutes = require('./routes/file.routes');
+const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +58,7 @@ app.use('/api/enhance', enhanceRoutes);
 app.use('/api/rembg', rembgRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/file', fileRoutes);
+app.use('/api/tool-stats', analyticsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
