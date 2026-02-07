@@ -1,23 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const puppeteer = require('puppeteer-core');
-
-// Find Chrome executable path
-const getChromePath = () => {
-    const paths = [
-        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
-        process.env.CHROME_PATH
-    ];
-
-    const fs = require('fs');
-    for (const p of paths) {
-        if (p && fs.existsSync(p)) {
-            return p;
-        }
-    }
-    return null;
-};
+const puppeteer = require('puppeteer');
 
 /**
  * POST /api/pdf/generate
@@ -31,8 +14,6 @@ router.post('/generate', async (req, res) => {
 
         // If base64 provided, run Mistral OCR first to get text
         if (base64) {
-            // console.log(`🔍 Running Mistral OCR for PDF generation... (${mimeType})`);
-
             try {
                 const axios = require('axios');
                 const isPdf = mimeType === 'application/pdf';
@@ -58,11 +39,7 @@ router.post('/generate', async (req, res) => {
 
                 const pages = mistralResponse.data?.pages || [];
                 text = pages.map(p => p.markdown).join('\n\n') || '';
-
-                // console.log(`✅ OCR extracted ${text.length} characters for PDF generation`);
             } catch (ocrError) {
-                // console.error('OCR Error in PDF generation:', ocrError.message);
-                // Fallthrough - will fail at !text check below if extraction failed
                 throw new Error(`OCR extraction failed: ${ocrError.message}`);
             }
         }
@@ -74,21 +51,10 @@ router.post('/generate', async (req, res) => {
             });
         }
 
-        const chromePath = getChromePath();
-        if (!chromePath) {
-            return res.status(500).json({
-                error: 'Chrome not found',
-                message: 'Please install Google Chrome or set CHROME_PATH environment variable'
-            });
-        }
-
-        // console.log(`📄 Generating PDF with Chrome: ${chromePath}`);
-
-        // Launch browser
+        // Launch browser with bundled Chromium (works on all platforms)
         browser = await puppeteer.launch({
-            executablePath: chromePath,
             headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
         });
 
         const page = await browser.newPage();
@@ -234,14 +200,9 @@ router.post('/generate', async (req, res) => {
  * Check if PDF generation is available
  */
 router.get('/status', (req, res) => {
-    const chromePath = getChromePath();
-
     res.json({
-        available: !!chromePath,
-        chromePath: chromePath || 'Not found',
-        message: chromePath
-            ? 'PDF generation is available'
-            : 'Chrome not found. Please install Google Chrome.'
+        available: true,
+        message: 'PDF generation is available (using bundled Chromium)'
     });
 });
 
@@ -265,14 +226,14 @@ const upload = multer({
 
 /**
  * POST /api/pdf/word-to-pdf
- * Convert Word document (.docx) to PDF using MS Word via PowerShell
+ * Convert Word document (.docx) to PDF
+ * Uses MS Word on Windows, LibreOffice on Linux
  */
 router.post('/word-to-pdf', upload.single('file'), async (req, res) => {
     const tempDir = os.tmpdir();
     const timestamp = Date.now();
     const inputPath = path.join(tempDir, `word_${timestamp}.docx`);
     const outputPath = path.join(tempDir, `word_${timestamp}.pdf`);
-    const psScriptPath = path.join(tempDir, `convert_${timestamp}.ps1`);
 
     try {
         const file = req.file;
@@ -285,13 +246,15 @@ router.post('/word-to-pdf', upload.single('file'), async (req, res) => {
             return res.status(400).json({ error: 'Invalid file type. Please upload a .doc or .docx file.' });
         }
 
-        // console.log(`📄 Converting Word document: ${file.originalname}`);
+        let pdfBuffer;
+        const isWindows = process.platform === 'win32';
 
-        // Write file to temp directory
-        fs.writeFileSync(inputPath, file.buffer);
+        if (isWindows) {
+            // Use MS Word on Windows (best quality)
+            fs.writeFileSync(inputPath, file.buffer);
 
-        // Create PowerShell script file (avoids escaping issues)
-        const psScript = `
+            const psScriptPath = path.join(tempDir, `convert_${timestamp}.ps1`);
+            const psScript = `
 $word = New-Object -ComObject Word.Application
 $word.Visible = $false
 $word.DisplayAlerts = 0
@@ -304,54 +267,41 @@ try {
     [System.Runtime.Interopservices.Marshal]::ReleaseComObject($word) | Out-Null
 }
 `;
-        fs.writeFileSync(psScriptPath, psScript);
+            fs.writeFileSync(psScriptPath, psScript);
 
-        // Execute PowerShell
-        const { execSync } = require('child_process');
+            const { execSync } = require('child_process');
+            try {
+                execSync(`powershell -ExecutionPolicy Bypass -File "${psScriptPath}"`, {
+                    timeout: 120000,
+                    windowsHide: true
+                });
+            } catch (psError) {
+                // Clean up and throw
+                if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+                if (fs.existsSync(psScriptPath)) fs.unlinkSync(psScriptPath);
+                throw new Error('MS Word conversion failed. Make sure Microsoft Word is installed.');
+            }
 
-        // console.log('📦 Using MS Word for conversion...');
-
-        try {
-            execSync(`powershell -ExecutionPolicy Bypass -File "${psScriptPath}"`, {
-                timeout: 120000,
-                windowsHide: true
-            });
-        } catch (psError) {
-            // Clean up
-            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-            if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
             if (fs.existsSync(psScriptPath)) fs.unlinkSync(psScriptPath);
 
-            // console.error('PowerShell error:', psError.message);
-            return res.status(500).json({
-                error: 'MS Word conversion failed',
-                message: 'Make sure Microsoft Word is installed and try again.'
-            });
-        }
+            if (!fs.existsSync(outputPath)) {
+                if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+                throw new Error('PDF was not generated.');
+            }
 
-        // Clean up script file
-        if (fs.existsSync(psScriptPath)) fs.unlinkSync(psScriptPath);
-
-        // Check if PDF was created
-        if (!fs.existsSync(outputPath)) {
+            pdfBuffer = fs.readFileSync(outputPath);
             if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-            return res.status(500).json({
-                error: 'Conversion failed',
-                message: 'PDF was not generated. Please try again.'
-            });
+            if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+
+        } else {
+            // Use LibreOffice on Linux
+            const libre = require('libreoffice-convert');
+            const util = require('util');
+            const libreConvert = util.promisify(libre.convert);
+            pdfBuffer = await libreConvert(file.buffer, '.pdf', undefined);
         }
 
-        // Read the PDF
-        const pdfBuffer = fs.readFileSync(outputPath);
-
-        // Clean up temp files
-        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-        if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
-
-        // Create output filename
         const outputFilename = file.originalname.replace(/\.(doc|docx)$/i, '.pdf');
-
-        // console.log(`✅ Word to PDF conversion successful: ${outputFilename} (${pdfBuffer.length} bytes)`);
 
         res.set({
             'Content-Type': 'application/pdf',
@@ -362,19 +312,19 @@ try {
         res.send(pdfBuffer);
 
     } catch (error) {
-        // console.error('❌ Word to PDF conversion error:', error.message);
+        console.error('Word to PDF error:', error.message);
 
-        // Clean up
+        // Clean up any temp files
         if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
         if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
-        if (fs.existsSync(psScriptPath)) fs.unlinkSync(psScriptPath);
 
         res.status(500).json({
             error: 'Conversion failed',
-            message: error.message
+            message: error.message || 'Failed to convert document. Please try again.'
         });
     }
 });
+
 
 /**
  * POST /api/pdf/protect
