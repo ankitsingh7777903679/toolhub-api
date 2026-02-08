@@ -2,7 +2,6 @@ services:
   - type: web
     name: toolhub-api
     env: docker
-    dockerFilePath: Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
