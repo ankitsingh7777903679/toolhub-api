@@ -1,9 +1,8 @@
 services:
   - type: web
     name: toolhub-api
-    env: node
-    buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: node index.js
+    env: docker
+    dockerFilePath: Dockerfile
     envVars:
       - key: NODE_ENV
         value: production
