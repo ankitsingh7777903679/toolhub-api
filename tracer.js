@@ -12,8 +12,8 @@ const tracer = require('dd-trace').init({
     analytics: true,
     // Tags for better filtering
     tags: {
-        app: '2olhub',
-        team: '2olhub'
+        app: 'vbussguj',
+        team: 'vbussguj'
     }
 });
 
